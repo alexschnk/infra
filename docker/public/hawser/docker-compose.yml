@@ -6,12 +6,14 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/alex/.ssl:/certs:ro
+      - /data/stacks:/data/stacks
     ports:
       - "2376:2376"
     environment:
       TOKEN: ${HAWSER_TOKEN}
       TLS_CERT: /certs/dockhand.crt
-      TLS_KEY: /certs/dockhand.key   
+      TLS_KEY: /certs/dockhand.key
+      STACKS_DIR: /data/stacks   
     labels:
       - dockhand.update=false
 
