@@ -1,0 +1,21 @@
+[Unit]
+Description=Local DNS-server (Podman Quadlet rootless)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=adguardhome
+Image=docker.io/adguard/adguardhome:latest
+Network=proxy.network
+PublishPort=53:53/tcp
+PublishPort=53:53/udp
+PublishPort=3000:3000
+Volume=/home/alex/data/adguardhome/work:/opt/adguardhome/work:Z
+Volume=/home/alex/data/adguardhome/conf:/opt/adguardhome/conf:Z
+
+[Service]
+Restart=always
+RestartSec=2s
+
+[Install]
+WantedBy=default.target

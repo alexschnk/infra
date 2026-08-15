@@ -1,0 +1,5 @@
+[http]
+	sslVerify = false
+[user]
+	name = alexschnk
+	email = alexschnk@alexschnk.comm
