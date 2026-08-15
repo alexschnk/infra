@@ -1,0 +1,29 @@
+services:
+  3xui:
+    image: ghcr.io/mhsanaei/3x-ui:latest
+    container_name: pannel
+    volumes:
+      - /home/alex/docker/pannel/:/etc/x-ui/
+    environment:
+      XRAY_VMESS_AEAD_FORCED: "false"
+      XUI_ENABLE_FAIL2BAN: "true"
+    tty: true
+    restart: unless-stopped
+    ports:
+      - "39663:39663/tcp"
+      - "39663:39663/udp"
+    networks:
+      proxy:
+    security_opt:
+      - no-new-privileges
+    labels:
+      - "traefik.enable=true" # Enable Traefik on this service
+      - "traefik.http.routers.pannel.entrypoints=https" # Secure entrypoint for HTTPS
+      - "traefik.http.routers.pannel.rule=Host(`pannel.homelab.ru`)"  # Host rule for secure routing
+      - "traefik.http.routers.pannel.tls=true" # Enable TLS for secure connection
+      - "traefik.http.routers.pannel.middlewares=security-headers@file"
+      - "traefik.http.services.pannel.loadbalancer.server.port=2053"
+networks:
+  proxy:
+    name: proxy
+    external: true

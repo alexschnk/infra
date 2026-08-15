@@ -1,0 +1,29 @@
+services:
+  stirling-pdf:
+    image: stirlingtools/stirling-pdf:latest
+    container_name: stirling-pdf
+    volumes:
+      - /home/alex/docker/stirling-pdf/tessdata:/usr/share/tessdata  # OCR language files
+      - /home/alex/docker/stirling-pdf/configs:/configs               # Settings & database
+      - /home/alex/docker/stirling-pdf/logs:/logs                     # Application logs
+      - /home/alex/docker/stirling-pdf/pipeline:/pipeline             # Automation configs
+    environment:
+      - SECURITY_ENABLELOGIN=false    # Set true to enable user authentication
+      - LANGS=ru_RU                   # Interface language
+#      - LANGS=en_GB                   # Interface language
+    restart: unless-stopped
+    networks:
+      proxy:
+    security_opt:
+      - no-new-privileges
+    labels:
+      - "traefik.enable=true" # Enable Traefik on this service
+      - "traefik.http.routers.stirling-pdf.entrypoints=https" # Secure entrypoint for HTTPS
+      - "traefik.http.routers.stirling-pdf.rule=Host(`stirling-pdf.homelab.ru`)"  # Host rule for secure routing
+      - "traefik.http.routers.stirling-pdf.tls=true" # Enable TLS for secure connection
+      - "traefik.http.routers.stirling-pdf.middlewares=security-headers@file,authelia@docker"
+      - "traefik.http.services.stirling-pdf.loadbalancer.server.port=8080"
+networks:
+  proxy:
+    name: proxy
+    external: true

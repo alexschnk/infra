@@ -1,0 +1,12 @@
+[Unit]
+Description=Run gitbackup script daily at 08:55 AM
+Requires=gitbackup.service
+
+[Timer]
+OnCalendar=*-*-* 08:55:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+
+

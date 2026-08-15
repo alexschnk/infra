@@ -1,0 +1,33 @@
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    networks:
+      proxy:
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Moscow
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=6881
+    volumes:
+      - /home/alex/docker/qbittorrent/config:/config
+      - /home/alex/shares/qbittorrent:/downloads #optional
+#    ports:
+#      - 8080:8080
+#      - 6881:6881
+#      - 6881:6881/udp
+    restart: unless-stopped
+    security_opt: 
+      - no-new-privileges
+    labels: 
+      - "traefik.enable=true" # Enable Traefik on this service
+      - "traefik.http.routers.qbittorrent.entrypoints=https" # Secure entrypoint for HTTPS
+      - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.homelab.ru`)"  # Host rule for secure routing
+      - "traefik.http.routers.qbittorrent.tls=true" # Enable TLS for secure connection
+      - "traefik.http.routers.qbittorrent.middlewares=security-headers@file"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
+networks:
+    proxy:
+      name: proxy 
+      external: true

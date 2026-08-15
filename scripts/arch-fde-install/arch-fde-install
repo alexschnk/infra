@@ -1,0 +1,100 @@
+#!/bin/bash
+echo "Welcome to Arch linux installation script!"
+
+#Disk partitioning
+lsblk
+read -p "Print disk name: " disk
+cfdisk $disk
+lsblk
+read -p "Print EFI partition name: " efipart
+read -p "Print root partition name: " rootpart
+
+#Partition mount
+
+mkfs.vfat -F32 /dev/$efipart
+cryptsetup luksFormat -v -y --type luks1 /dev/$rootpart
+cryptsetup luksOpen /dev/$rootpart root
+mkfs.btrfs -f /dev/mapper/root
+mount /dev/mapper/root /mnt
+btrfs su cr /mnt/@
+umount -R /mnt
+mount -o rw,lazytime,compress=zstd,max_inline=256,space_cache=v2,ssd,commit=300,subvol=@ /dev/mapper/root /mnt
+mkdir -p /mnt/efi
+mount /dev/$efipart /mnt/efi
+
+#Arch linux installation
+
+systemctl start reflector
+pacman -Sy
+pacstrap -i /mnt base base-devel linux-zen linux-zen-headers linux-firmware dosfstools btrfs-progs amd-ucode archlinux-keyring nano dhcpcd dhclient networkmanager wayland xorg-xwayland grub efibootmgr os-prober mtools e2fsprogs gnome gdm
+
+#Fstab generation
+
+genfstab -U /mnt >> /mnt/etc/fstab
+
+#Systm configuration
+
+arch-chroot /mnt /bin/bash -c "ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime"
+arch-chroot /mnt /bin/bash -c "hwclock --systohc"
+
+arch-chroot /mnt /bin/bash -c "sed -i '/^#.*en_US.UTF-8/s/^#*//g' /etc/locale.gen"
+arch-chroot /mnt /bin/bash -c "sed -i '/^#.*ru_RU.UTF-8/s/^#*//g' /etc/locale.gen"
+arch-chroot /mnt /bin/bash -c "locale-gen"
+
+arch-chroot /mnt /bin/bash -c 'echo "LANG=ru_RU.UTF-8" >> /etc/locale.conf'
+
+arch-chroot /mnt /bin/bash -c "echo 'KEYMAP=ru' >> /etc/vconsole.conf"
+arch-chroot /mnt /bin/bash -c 'echo "FONT=cyr-sun16" >> /etc/vconsole.conf'
+
+arch-chroot /mnt /bin/bash -c 'echo "archlinux" >> /etc/hostname'
+
+arch-chroot /mnt /bin/bash -c 'echo "127.0.0.1 localhost" >> /etc/hosts'
+arch-chroot /mnt /bin/bash -c 'echo "::1       localhost" >> /etc/hosts'
+arch-chroot /mnt /bin/bash -c 'echo "127.0.0.1 archlinux.localdomain archlinux" >> /etc/hosts'
+
+echo "Print root password"
+arch-chroot /mnt /bin/bash -c 'passwd'
+
+arch-chroot /mnt /bin/bash -c "sed -i '/^#.*%wheel ALL=(ALL:ALL) ALL/s/^#*//g' /etc/sudoers"
+
+read -p "Print username: " username
+arch-chroot /mnt /bin/bash -c "useradd -m -G wheel -s /bin/bash  $username"
+
+echo "Print username password"
+arch-chroot /mnt /bin/bash -c "passwd $username"
+
+#File-key creation
+
+arch-chroot /mnt /bin/bash -c 'mkdir /keys'
+arch-chroot /mnt /bin/bash -c 'dd bs=512 count=4 if=/dev/random of=/keys/crypt.key iflag=fullblock'
+arch-chroot /mnt /bin/bash -c "cryptsetup -v luksAddKey /dev/$rootpart /keys/crypt.key"
+
+#Initramfs
+
+arch-chroot /mnt /bin/bash -c "sed -i 's/^FILES=\(.*\)/FILES=\(\/keys\/crypt.key\)/' /etc/mkinitcpio.conf"
+arch-chroot /mnt /bin/bash -c "sed -i '/^HOOKS=/s/.*/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt filesystems fsck)/' /etc/mkinitcpio.conf"
+
+#Grub
+
+arch-chroot /mnt /bin/bash -c "sed -i 's/^#GRUB_ENABLE_CRYPTODIS.*/GRUB_ENABLE_CRYPTODISK=y/' /etc/default/grub"
+uuid=$(blkid -o value -s UUID /dev/$rootpart)
+sed -i '/^GRUB_CMDLINE_LINUX=/c\\GRUB_CMDLINE_LINUX="cryptdevice=UUID='$uuid':root:allow-discards root=/dev/mapper/root cryptkey=rootfs:/keys/crypt.key rootfstype=btrfs"' /mnt/etc/default/grub
+arch-chroot /mnt /bin/bash -c "grub-install --target=x86_64-efi --efi-directory=/efi /dev/$disk"
+arch-chroot /mnt /bin/bash -c "grub-mkconfig -o /boot/grub/grub.cfg"
+
+#Services
+
+arch-chroot /mnt /bin/bash -c "systemctl enable NetworkManager gdm"
+
+#File-key protection
+
+arch-chroot /mnt /bin/bash -c "chmod -R 400 /keys"
+
+#Finishing
+
+arch-chroot /mnt /bin/bash -c "mkinitcpio -P"
+arch-chroot /mnt /bin/bash -c "grub-mkconfig -o /boot/grub/grub.cfg"
+
+umount -R /mnt
+cryptsetup close root
+reboot

@@ -1,0 +1,137 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/services/
+
+- Сервера:
+
+    - Proxmox virtual environment:
+        icon: proxmox.png
+        href: https://pve.homelab.ru
+        description: Сервер виртуализации
+        widget:
+          type: proxmox
+          url: https://192.168.31.10:8006
+          username: {{HOMEPAGE_VAR_PVE_USERNAME}}
+          password: {{HOMEPAGE_VAR_PVE_API_KEY}}
+          ignoreInsecure: true
+
+    - Proxmox backup server:
+        icon: proxmox.png
+        href: https://pbs.homelab.ru
+        description: Сервер резервного копирования VM 
+        widget:
+          type: proxmoxbackupserver
+          url: https://192.168.31.203:8007
+          username: {{HOMEPAGE_VAR_PBS_USERNAME}}
+          password: {{HOMEPAGE_VAR_PBS_API_KEY}}
+          ignoreInsecure: true
+
+    - TrueNAS Scale:
+        icon: truenas.png
+        href: https://truenas.homelab.ru
+        description: NAS
+        widget:
+          type: truenas
+          url: https://192.168.31.201
+          version: 2 # optional, defaults to 1
+          enablePools: true # optional, defaults to false
+          nasType: scale
+          key: {{HOMEPAGE_VAR_TRUENAS_API_KEY}}
+
+    - OpenWRT:
+        icon: openwrt.png
+        href: https://openwrt.homelab.ru
+        description: Маршрутизатор
+        widget:
+          type: openwrt
+          url: https://192.168.31.1
+          username: {{HOMEPAGE_VAR_OWRT_USERNAME}}
+          password: {{HOMEPAGE_VAR_OWRT_PASSWORD}}
+#          interfaceName: br-lan # optional
+
+- Сервисы:
+
+    - Traefik:
+        icon: traefik.png
+        href: https://traefik-dashboard.homelab.ru
+        description: Обратный прокси
+
+    - Authelia:
+        icon: authelia.png
+        href: https://auth.homelab.ru
+        description: Сервер аутентификации и авторизации
+    
+    - Adguard home:
+        icon: adguard-home.png
+        href: https://adguardhome.homelab.ru
+        description: DNS-сервер
+    
+    - Dockhand:
+        icon: dockhand.png
+        href: https://dockhand.homelab.ru
+        description: Оркестратор Docker
+
+    - Forgejo:
+        icon: forgejo.png
+        href: https://forgejo.homelab.ru
+        description: Хостинг кода
+
+    - Syncthing:
+        icon: syncthing.png
+        href: https://syncthing.homelab.ru
+        description: Синхронизация файлов
+
+    - Syncthing:
+        icon: syncthing.png
+        href: https://127.0.0.1:8384
+        description: Синхронизация файлов. Клиент ПК
+
+    - Qbittorrent:
+        icon: qbittorrent.png
+        href: https://qbittorrent.homelab.ru
+        description: Торрент-клиент
+
+    - Gotify:
+        icon: gotify.png
+        href: https://gotify.homelab.ru
+        description: Сервер пуш-уведомлений
+
+    - Uptime kuma:
+        icon: uptime-kuma.png
+        href: https://uptime-kuma.homelab.ru
+        description: Мониторинг доступности
+    
+    - Stirling PDF:
+        icon: stirling-pdf.png
+        href: https://stirling-pdf.homelab.ru
+        description: PDF-редактор
+
+    - MeTube:
+        icon: metube.png
+        href: https://metube.homelab.ru
+        description: Загрузчик видео YouTube
+
+    - Immich:
+        icon: immich.png
+        href: https://immich.homelab.ru
+        description: Фото и видео
+    
+    - Nextcloud:
+        icon: nextcloud.png
+        href: https://nextcloud.homelab.ru
+        description: Домашнее облако
+    
+    - MiRouter AX3200:
+ #       icon: mi.png
+        href: https://192.168.31.124/cgi-bin/luci/
+        description: Точка доступа
+
+    - 3X-UI :
+ #       icon: mi.png
+        href: {{HOMEPAGE_VAR_3XUI_URL}}
+        description: Entry node
+    
+    - 3X-UI local:
+ #       icon: mi.png
+        href: https://pannel.homelab.ru/admin
+        description: Local node

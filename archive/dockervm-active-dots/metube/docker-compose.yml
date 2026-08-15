@@ -1,0 +1,22 @@
+services:
+  metube:
+    image: ghcr.io/alexta69/metube
+    container_name: metube
+    restart: unless-stopped
+    volumes:
+      - /home/alex/shares/metube:/downloads
+    networks:
+      proxy:
+    security_opt: 
+      - no-new-privileges
+    labels: 
+      - "traefik.enable=true" # Enable Traefik on this service
+      - "traefik.http.routers.metube.entrypoints=https" # Secure entrypoint for HTTPS
+      - "traefik.http.routers.metube.rule=Host(`metube.homelab.ru`)"  # Host rule for secure routing
+      - "traefik.http.routers.metube.tls=true" # Enable TLS for secure connection
+      - "traefik.http.routers.metube.middlewares=security-headers@file,authelia@docker"
+      - "traefik.http.services.metube.loadbalancer.server.port=8081"
+networks:
+  proxy:
+    name: proxy 
+    external: true

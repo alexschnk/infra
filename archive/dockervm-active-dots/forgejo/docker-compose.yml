@@ -1,0 +1,31 @@
+networks:
+  proxy:
+    name: proxy 
+    external: true
+
+services:
+  server:
+    image: codeberg.org/forgejo/forgejo:13
+    container_name: forgejo
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    restart: unless-stopped
+    security_opt: 
+      - no-new-privileges
+    networks:
+      - proxy
+    volumes:
+#      - /home/forgejo/data:/data
+      - /etc/localtime:/etc/localtime:ro
+      - /home/alex/docker/forgejo/data:/data
+    ports:
+#      - "3000:3000"
+      - "222:22"
+    labels: 
+      - "traefik.enable=true" # Enable Traefik on this service
+      - "traefik.http.routers.forgejo.entrypoints=https" # Secure entrypoint for HTTPS
+      - "traefik.http.routers.forgejo.rule=Host(`forgejo.homelab.ru`)"  # Host rule for secure routing
+      - "traefik.http.routers.forgejo.tls=true" # Enable TLS for secure connection
+      - "traefik.http.routers.forgejo.middlewares=security-headers@file"
+      - "traefik.http.services.forgejo.loadbalancer.server.port=3000"
