@@ -11,8 +11,8 @@ services:
       - .env.dockhand
     environment:
       HOMEPAGE_ALLOWED_HOSTS: homepage.homelab.ru # required, may need port. See gethomepage.dev/installation/#homepage_allowed_hosts
-      PUID: 1000
-      PGID: 1000
+      PUID: 0
+      PGID: 0
     restart: unless-stopped
     security_opt: 
       - no-new-privileges:true
