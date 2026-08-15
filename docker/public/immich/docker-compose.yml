@@ -10,7 +10,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /home/alex/shares/syncthing/data:/external:ro
     env_file:
-      - .env
+      - .env.dockhand
     networks:
       immich:
     depends_on:
@@ -28,7 +28,7 @@ services:
     volumes:
       - /home/alex/docker/immich/iml:/cache
     env_file:
-      - .env
+      - .env.dockhand
     restart: unless-stopped
     healthcheck:
       disable: false
