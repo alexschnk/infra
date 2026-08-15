@@ -1,0 +1,18 @@
+http:
+ #region routers 
+  routers:
+    qbittorrent:
+      entryPoints:
+        - "https"
+      rule: "Host(`qbittorrent.homelab.ru`)"        # Change DOMAIN_NAME to yours
+      middlewares:
+        - security-headers@file
+      tls: {}
+      service: qbittorrent
+
+  services:
+    qbittorrent:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.31.206:8080"            # Change IP Address to your proxmox instance
+        passHostHeader: true

@@ -1,0 +1,25 @@
+http:
+  routers:
+    nextcloud:
+      entryPoints:
+        - "https"
+      rule: "Host(`nextcloud.homelab.ru`)"        # Change DOMAIN_NAME to yours
+      middlewares:
+        - nextcloud-headers@file
+      tls: {}
+      service: nextcloud
+
+  services:
+    nextcloud:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.31.202:11000"            # Change IP Address to your proxmox instance
+        passHostHeader: true
+  middlewares:
+    nextcloud-headers:
+      headers:
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+        referrerPolicy: "same-origin"
+        customResponseHeaders:
+          X-Robots-Tag: "noindex, nofollow" #changed from default "none" parameter

@@ -1,0 +1,45 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/bookmarks
+
+- Закладки:
+
+    - Github:
+        - icon: github.png
+          href: https://github.com/
+
+    - Codeberg:
+        - icon: codeberg.png
+          href: https://codeberg.org/
+
+    - Flathub:
+        - icon: flathub.png
+          href: https://flathub.org/
+
+    - YouTube:
+        - icon: youtube.png
+          href: https://youtube.com/
+    
+    - ARU:
+        - icon: codeberg.png
+          href: https://ventureo.codeberg.page/
+
+    - OpenRouter:
+        - abbr: OR
+          href: https://openrouter.ai/
+   
+    - Forum Sanohosting:
+        - abbr: FS
+          href: https://forum.samohosting.ru/
+
+    - Claude:
+        - abbr: CAI
+          href: https://claude.ai/
+
+    - ChatGPT:
+        - abbr: OAI
+          href: https://chatgpt.com/
+
+    - DeepSeek:
+        - abbr: DS
+          href: https://chat.deepseek.com/

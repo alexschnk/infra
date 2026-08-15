@@ -1,0 +1,17 @@
+services:
+  3xui:
+    image: ghcr.io/mhsanaei/3x-ui:latest
+    container_name: pannel
+    volumes:
+      - /home/alex/data/pannel/:/etc/x-ui/
+    environment:
+      XRAY_VMESS_AEAD_FORCED: "false"
+      XUI_ENABLE_FAIL2BAN: "true"
+    tty: true
+    restart: unless-stopped
+    ports:
+      - "39663:39663/tcp"
+      - "39663:39663/udp"
+      - "8083:2053/tcp"
+    security_opt:
+      - no-new-privileges:true

@@ -1,0 +1,19 @@
+http:
+ #region routers 
+  routers:
+    homepage:
+      entryPoints:
+        - "https"
+      rule: "Host(`homepage.homelab.ru`)"        # Change DOMAIN_NAME to yours
+      middlewares:
+        - security-headers@file
+        - authelia@docker
+      tls: {}
+      service: homepage
+
+  services:
+    homepage:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.31.202:8084"            # Change IP Address to your proxmox instance
+        passHostHeader: true

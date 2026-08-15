@@ -1,0 +1,35 @@
+services:
+  traefik:
+    image: traefik:latest 
+    container_name: traefik 
+    restart: unless-stopped 
+    security_opt:
+      - no-new-privileges:true 
+    networks:
+       proxy: 
+    ports:
+      - 80:80 
+      - 443:443/tcp
+      - 443:443/udp
+      - 21000:21000/tcp
+      - 222:222/tcp
+    volumes:
+      - /etc/localtime:/etc/localtime:ro 
+      - /var/run/docker.sock:/var/run/docker.sock:ro 
+      - ./configs/traefik.yaml:/traefik.yaml:ro 
+      - ./configs/acme.json:/acme.json 
+      - ./dynamic:/dynamic/:ro 
+      - /home/alex/data/traefik/logs:/var/log/traefik  
+      - /home/alex/data/traefik/ssl:/ssl:ro
+    labels: 
+      - "traefik.enable=true" # Enable Traefik on this service
+      - "traefik.http.routers.traefik-dashboard.entrypoints=https" # Secure entrypoint for HTTPS
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik-dashboard.homelab.ru`)"  # Host rule for secure routing
+      - "traefik.http.routers.traefik-dashboard.tls=true" # Enable TLS for secure connection
+      - "traefik.http.routers.traefik-dashboard.middlewares=security-headers@file,authelia@docker"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal" # Internal service for Traefik API
+networks:
+  proxy:
+    name: proxy 
+    external: true 

@@ -1,0 +1,18 @@
+http:
+ #region routers 
+  routers:
+    gotify:
+      entryPoints:
+        - "https"
+      rule: "Host(`gotify.homelab.ru`)"        # Change DOMAIN_NAME to yours
+      middlewares:
+        - security-headers@file
+      tls: {}
+      service: gotify
+
+  services:
+    gotify:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.31.202:8082"            # Change IP Address to your proxmox instance
+        passHostHeader: true

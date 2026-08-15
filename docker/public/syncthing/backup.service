@@ -1,0 +1,11 @@
+[Unit]
+Description=Script for encrypting by GPG
+After=network.target
+
+[Service]
+Type=oneshot
+User=alex
+ExecStart=/home/alex/configs/syncthing/scrypt
+
+[Install]
+WantedBy=multi-user.target

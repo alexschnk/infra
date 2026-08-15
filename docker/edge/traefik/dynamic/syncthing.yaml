@@ -1,0 +1,34 @@
+http:
+  
+  routers:
+    syncthing:
+      entryPoints:
+        - "https"
+      rule: "Host(`syncthing.homelab.ru`)"        # Change DOMAIN_NAME to yours
+      middlewares:
+        - security-headers@file
+        - authelia@docker
+      tls: {}
+      service: syncthing
+
+  services:
+    syncthing:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.31.202:8081"            # Change IP Address to your proxmox instance
+        passHostHeader: true
+
+tcp:
+ 
+  routers:
+    sync:
+      entryPoints:
+        - "syncthing"
+      rule: "HostSNI(`*`)"      
+      service: sync
+
+  services:
+    sync:
+      loadBalancer:
+        servers:
+          - address: "192.168.31.202:21000" 

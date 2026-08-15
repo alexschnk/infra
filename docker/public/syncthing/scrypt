@@ -1,0 +1,20 @@
+#!/bin/bash
+
+obsidian_path=/home/$USER/shares/syncthing/bases/obsidian
+kp_path=/home/$USER/shares/syncthing/bases/passwords
+repo_path=/home/$USER/shares/syncthing/drive
+dots_path=/home/$USER/shares/syncthing/data/repos
+gpg_keyname=data
+
+rm -rfv "$repo_path"/**
+
+tar --zstd -cf "$repo_path"/obsidian.zst "$obsidian_path" 
+gpg --encrypt --recipient "$gpg_keyname" "$repo_path"/obsidian.zst 
+rm "$repo_path"/obsidian.zst
+
+cp "$kp_path"/KP "$repo_path"/KP
+
+tar --zstd -cf "$repo_path"/repos.zst "$dots_path" 
+gpg --encrypt --recipient "$gpg_keyname" "$repo_path"/repos.zst
+rm "$repo_path"/repos.zst
+

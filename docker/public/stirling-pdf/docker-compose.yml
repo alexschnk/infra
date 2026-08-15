@@ -1,0 +1,18 @@
+services:
+  stirling-pdf:
+    image: stirlingtools/stirling-pdf:latest
+    container_name: stirling-pdf
+    volumes:
+      - /home/alex/docker/stirling-pdf/tessdata:/usr/share/tessdata  # OCR language files
+      - /home/alex/docker/stirling-pdf/configs:/configs               # Settings & database
+      - /home/alex/docker/stirling-pdf/logs:/logs                     # Application logs
+      - /home/alex/docker/stirling-pdf/pipeline:/pipeline             # Automation configs
+    environment:
+      - SECURITY_ENABLELOGIN=false    # Set true to enable user authentication
+      - LANGS=ru_RU                   # Interface language
+#      - LANGS=en_GB                   # Interface language
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "8080:8080"

@@ -1,0 +1,19 @@
+http:
+ #region routers 
+  routers:
+    uptime-kuma:
+      entryPoints:
+        - "https"
+      rule: "Host(`uptime-kuma.homelab.ru`)"        # Change DOMAIN_NAME to yours
+      middlewares:
+        - security-headers@file
+        - authelia@docker
+      tls: {}
+      service: uptime-kuma
+
+  services:
+    uptime-kuma:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.31.204:8084"            # Change IP Address to your proxmox instance
+        passHostHeader: true

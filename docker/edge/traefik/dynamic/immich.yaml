@@ -1,0 +1,18 @@
+http:
+ #region routers 
+  routers:
+    immich:
+      entryPoints:
+        - "https"
+      rule: "Host(`immich.homelab.ru`)"        # Change DOMAIN_NAME to yours
+      middlewares:
+        - security-headers@file
+      tls: {}
+      service: immich
+
+  services:
+    immich:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.31.202:8083"            # Change IP Address to your proxmox instance
+        passHostHeader: true

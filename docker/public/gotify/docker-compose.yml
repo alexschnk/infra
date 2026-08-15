@@ -1,0 +1,13 @@
+services:
+  gotify:
+    image: gotify/server:2
+    container_name: gotify
+    restart: unless-stopped
+    ports:
+      - 8082:80
+    environment:
+      - TZ=Europe/Moscow
+    volumes:
+      - /home/alex/docker/gotify/data:/app/data
+    security_opt: 
+      - no-new-privileges:true
