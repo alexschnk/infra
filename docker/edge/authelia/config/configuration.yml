@@ -88,7 +88,7 @@ regulation:
 
 storage:
     local:
-        path: /config/db.sqlite3
+        path: /db/db.sqlite3
 
 #password_policy:
 #  zxcvbn:

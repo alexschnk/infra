@@ -5,6 +5,7 @@ services:
         volumes:
             - "/home/alex/data/authelia/secrets:/secrets:ro"
             - "./config:/config"
+            - "/home/alex/data/authelia/db:/db"
             - "/home/alex/data/authelia/logs:/var/log/authelia/"
         restart: unless-stopped
         networks:
