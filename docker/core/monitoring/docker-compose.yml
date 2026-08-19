@@ -1,0 +1,30 @@
+services:
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics:latest
+    container_name: victoria-imetrics
+    restart: unless-stopped
+    ports:
+      - "8085:8428"
+    volumes:
+      - /home/alex/data/monitoring/victoria-metrics:/victoria-metrics-data
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - "--storageDataPath=/victoria-metrics-data"
+      - "--retentionPeriod=14d"
+      - "--httpListenAddr=:8428"
+      - "--promscrape.config=/etc/prometheus/prometheus.yml"
+    security_opt: 
+      - no-new-privileges:true
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "8086:3000"
+    volumes:
+      - /home/alex/data/monitoring/grafana:/var/lib/grafana
+#    environment:
+#      - GF_SECURITY_ADMIN_PASSWORD=changeme
+    security_opt: 
+      - no-new-privileges:true
