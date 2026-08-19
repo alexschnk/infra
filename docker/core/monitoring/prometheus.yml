@@ -15,19 +15,23 @@ scrape_configs:
 #        target_label: instance
 #      - target_label: __address__
 #        replacement: pve-exporter:9221
-  - job_name: "pve"
+scrape_configs:
+  - job_name: 'pve-exporter'
     static_configs:
-      # Адрес и порт вашего контейнера с pve-exporter
-      - targets: ["pve-exporter:9221"]
+      - targets: ['pve-exporter:9221']
     metrics_path: /pve
     params:
-      module: [default]
-      # Явно укажите IP-адрес вашего Proxmox-хоста
-      target: ['192.168.31.10:8006']
-      # Эти параметры добавлены для совместимости с новыми версиями экспортера
       cluster: ['1']
       node: ['1']
-  
+      target: ['192.168.31.10']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: pve-exporter:9221  
+
   - job_name: 'truenas'
     static_configs:
       - targets:
