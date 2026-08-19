@@ -28,9 +28,6 @@ entryPoints:
   syncthing:
     address: ":21000"
 
-  forgejo:
-    address: ":222"
-
 serversTransport:
   insecureSkipVerify: true
 

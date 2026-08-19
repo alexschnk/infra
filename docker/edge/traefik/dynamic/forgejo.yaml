@@ -17,17 +17,3 @@ http:
           - url: "http://192.168.31.204:8082"            # Change IP Address to your proxmox instance
         passHostHeader: true
 
-tcp:
- 
-  routers:
-    gejo:
-      entryPoints:
-        - "forgejo"
-      rule: "HostSNI(`*`)"      
-      service: gejo
-
-  services:
-    gejo:
-      loadBalancer:
-        servers:
-          - address: "192.168.31.204:222" 
