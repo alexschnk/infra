@@ -27,13 +27,3 @@ services:
     security_opt: 
       - no-new-privileges:true
 
-  pve-exporter:
-    image: prompve/prometheus-pve-exporter:latest
-    container_name: pve-exporter
-    restart: unless-stopped
-    ports:
-      - "9221:9221"
-    env_file:
-      - .env.dockhand
-    security_opt: 
-      - no-new-privileges:true
