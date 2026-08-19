@@ -2,35 +2,19 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-#  - job_name: "pve"
-#    static_configs:
-#      - targets: ["192.168.31.10:8006"]   # адрес самого Proxmox (не exporter'а!)
-#    metrics_path: /pve
-#    params:
-#      module: [default]
-#    relabel_configs:
-#      - source_labels: [__address__]
-#        target_label: __param_target
-#      - source_labels: [__param_target]
-#        target_label: instance
-#      - target_label: __address__
-#        replacement: pve-exporter:9221
-scrape_configs:
-  - job_name: 'pve-exporter'
+  - job_name: "pve"
     static_configs:
-      - targets: ['pve-exporter:9221']
+      - targets: ["192.168.31.10"]   # адрес самого Proxmox (не exporter'а!)
     metrics_path: /pve
     params:
-      cluster: ['1']
-      node: ['1']
-      target: ['192.168.31.10']
+      module: [default]
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: pve-exporter:9221  
+        replacement: pve-exporter:9221
 
   - job_name: 'truenas'
     static_configs:
