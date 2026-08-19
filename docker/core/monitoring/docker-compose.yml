@@ -28,7 +28,7 @@ services:
       - no-new-privileges:true
 
   pve-exporter:
-    image: prompt/prometheus-pve-exporter:latest
+    image: prompve/prometheus-pve-exporter:latest
     container_name: pve-exporter
     restart: unless-stopped
     ports:
