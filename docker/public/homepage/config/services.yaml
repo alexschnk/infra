@@ -133,5 +133,5 @@
     
     - 3X-UI local:
  #       icon: mi.png
-        href: https://pannel.homelab.ru
+        href: https://pannel.homelab.ru/admin
         description: Local node
