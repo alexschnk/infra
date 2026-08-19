@@ -15,3 +15,8 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: pve-exporter:9221
+
+  - job_name: 'truenas'
+    static_configs:
+      - targets:
+          - '192.168.31.201:9100'
