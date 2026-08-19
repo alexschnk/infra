@@ -24,7 +24,16 @@ services:
       - "8086:3000"
     volumes:
       - /home/alex/data/monitoring/grafana:/var/lib/grafana
-#    environment:
-#      - GF_SECURITY_ADMIN_PASSWORD=changeme
+    security_opt: 
+      - no-new-privileges:true
+
+  pve-exporter:
+    image: prompt/prometheus-pve-exporter:latest
+    container_name: pve-exporter
+    restart: unless-stopped
+    ports:
+      - "9221:9221"
+    env_file:
+      - .env.dockhand
     security_opt: 
       - no-new-privileges:true
