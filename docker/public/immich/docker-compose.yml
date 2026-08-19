@@ -22,18 +22,18 @@ services:
     ports:
       - "8083:2283"
 
-  immich-machine-learning:
-    container_name: immich-machine-learning
-    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
-    volumes:
-      - /home/alex/docker/immich/iml:/cache
-    env_file:
-      - .env.dockhand
-    restart: unless-stopped
-    healthcheck:
-      disable: false
-    networks:
-      immich:
+#  immich-machine-learning:
+#    container_name: immich-machine-learning
+#    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
+#    volumes:
+#      - /home/alex/docker/immich/iml:/cache
+#    env_file:
+#      - .env.dockhand
+#    restart: unless-stopped
+#    healthcheck:
+#      disable: false
+#    networks:
+#      immich:
   
   redis:
     container_name: immich-redis
