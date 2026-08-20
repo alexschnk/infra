@@ -101,6 +101,11 @@
         href: https://uptime-kuma.homelab.ru
         description: Мониторинг доступности
     
+    - Grafana:
+        icon: grafana.png
+        href: https://grafana.homelab.ru
+        description: Дашборды
+
     - Stirling PDF:
         icon: stirling-pdf.png
         href: https://stirling-pdf.homelab.ru
