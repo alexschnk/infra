@@ -2,7 +2,7 @@
   "apiVersion": "dashboard.grafana.app/v2",
   "kind": "Dashboard",
   "metadata": {
-    "name": "adzfqbt"
+    "name": "adpdv48"
   },
   "spec": {
     "annotations": [
@@ -1014,9 +1014,9 @@
                       "group": "prometheus",
                       "kind": "DataQuery",
                       "spec": {
-                        "expr": "node_filesystem_size_bytes{instance=\"$node\", job=\"$job\", mountpoint=~\"^/$|^/mnt/tank$|^/mnt/tank/.+$\"}",
-                        "instant": true,
-                        "legendFormat": "{{mountpoint}} - Total"
+                        "expr": "node_filesystem_size_bytes{instance=\"$node\", job=\"$job\", fstype!~\"tmpfs|overlay|squashfs|devtmpfs\"}",
+                        "format": "table",
+                        "instant": true
                       },
                       "version": "v0"
                     },
@@ -1034,9 +1034,9 @@
                       "group": "prometheus",
                       "kind": "DataQuery",
                       "spec": {
-                        "expr": "node_filesystem_size_bytes{instance=\"$node\", job=\"$job\", mountpoint=~\"^/$|^/mnt/tank$|^/mnt/tank/.+$\"} - node_filesystem_avail_bytes{instance=\"$node\", job=\"$job\", mountpoint=~\"^/$|^/mnt/tank$|^/mnt/tank/.+$\"}",
-                        "instant": true,
-                        "legendFormat": "{{mountpoint}} - Used"
+                        "expr": "node_filesystem_size_bytes{instance=\"$node\", job=\"$job\", fstype!~\"tmpfs|overlay|squashfs|devtmpfs\"} - node_filesystem_avail_bytes{instance=\"$node\", job=\"$job\", fstype!~\"tmpfs|overlay|squashfs|devtmpfs\"}",
+                        "format": "table",
+                        "instant": true
                       },
                       "version": "v0"
                     },
@@ -1045,20 +1045,114 @@
                 }
               ],
               "queryOptions": {},
-              "transformations": []
+              "transformations": [
+                {
+                  "group": "merge",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {}
+                  }
+                },
+                {
+                  "group": "organize",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "excludeByName": {
+                        "Time": true,
+                        "Time 1": true,
+                        "Time 2": true,
+                        "__name__": true,
+                        "__name__ 1": true,
+                        "__name__ 2": true,
+                        "device": true,
+                        "device 1": true,
+                        "device 2": true,
+                        "fstype": true,
+                        "fstype 1": true,
+                        "fstype 2": true,
+                        "instance": true,
+                        "instance 1": true,
+                        "instance 2": true,
+                        "job": true,
+                        "job 1": true,
+                        "job 2": true,
+                        "mountpoint 1": true,
+                        "mountpoint 2": true
+                      },
+                      "renameByName": {
+                        "Value #A": "Total",
+                        "Value #B": "Used"
+                      }
+                    }
+                  }
+                },
+                {
+                  "group": "calculateField",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "alias": "Used ratio",
+                      "binary": {
+                        "left": "Used",
+                        "operator": "/",
+                        "right": "Total"
+                      },
+                      "mode": "binary",
+                      "replaceFields": false
+                    }
+                  }
+                },
+                {
+                  "group": "calculateField",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "alias": "Used %",
+                      "binary": {
+                        "left": "Used ratio",
+                        "operator": "*",
+                        "right": "100"
+                      },
+                      "mode": "binary",
+                      "replaceFields": false
+                    }
+                  }
+                },
+                {
+                  "group": "organize",
+                  "kind": "Transformation",
+                  "spec": {
+                    "options": {
+                      "excludeByName": {
+                        "Used ratio": true
+                      }
+                    }
+                  }
+                }
+              ]
             }
           },
-          "description": "",
+          "description": "Все смонтированные файловые системы: разделы дисков, / и весь пул /mnt/tank с датасетами. node_exporter не отдаёт размер несмонтированных разделов, поэтому здесь только то, что реально смонтировано.",
           "id": 20,
           "links": [],
-          "title": "Disk Capacity (Total / Used): / , /mnt/tank и датасеты",
+          "title": "Disk Capacity",
           "vizConfig": {
-            "group": "bargauge",
+            "group": "table",
             "kind": "VizConfig",
             "spec": {
               "fieldConfig": {
                 "defaults": {
-                  "min": 0,
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false
+                  },
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -1071,36 +1165,88 @@
                         "value": 80
                       }
                     ]
-                  },
-                  "unit": "bytes"
+                  }
                 },
                 "overrides": [
                   {
                     "matcher": {
-                      "id": "byRegexp",
-                      "options": "/.*Total.*/"
+                      "id": "byName",
+                      "options": "mountpoint"
                     },
                     "properties": [
                       {
-                        "id": "color",
-                        "value": {
-                          "fixedColor": "#EAB839",
-                          "mode": "fixed"
-                        }
+                        "id": "displayName",
+                        "value": "Диск / датасет"
                       }
                     ]
                   },
                   {
                     "matcher": {
-                      "id": "byRegexp",
-                      "options": "/.*Used.*/"
+                      "id": "byName",
+                      "options": "Total"
                     },
                     "properties": [
                       {
-                        "id": "color",
+                        "id": "unit",
+                        "value": "bytes"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Used"
+                    },
+                    "properties": [
+                      {
+                        "id": "unit",
+                        "value": "bytes"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Used %"
+                    },
+                    "properties": [
+                      {
+                        "id": "unit",
+                        "value": "percent"
+                      },
+                      {
+                        "id": "min",
+                        "value": 0
+                      },
+                      {
+                        "id": "max",
+                        "value": 100
+                      },
+                      {
+                        "id": "custom.cellOptions",
                         "value": {
-                          "fixedColor": "#33A2C7",
-                          "mode": "fixed"
+                          "mode": "gradient",
+                          "type": "gauge"
+                        }
+                      },
+                      {
+                        "id": "thresholds",
+                        "value": {
+                          "mode": "absolute",
+                          "steps": [
+                            {
+                              "color": "green",
+                              "value": 0
+                            },
+                            {
+                              "color": "orange",
+                              "value": 80
+                            },
+                            {
+                              "color": "red",
+                              "value": 90
+                            }
+                          ]
                         }
                       }
                     ]
@@ -1108,28 +1254,8 @@
                 ]
               },
               "options": {
-                "displayMode": "gradient",
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": false
-                },
-                "maxVizHeight": 300,
-                "minVizHeight": 16,
-                "minVizWidth": 8,
-                "namePlacement": "auto",
-                "orientation": "horizontal",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
-                },
-                "showUnfilled": true,
-                "sizing": "auto",
-                "valueMode": "color"
+                "cellHeight": "md",
+                "showHeader": true
               }
             },
             "version": "13.2.0"
@@ -1334,7 +1460,7 @@
               "transformations": []
             }
           },
-          "description": "Показан только основной (Composite, обычно temp1) датчик диска — если для вашего чипа это не temp1, скажите, поправлю.",
+          "description": "Показан только основной (Composite, обычно temp1) датчик диска.",
           "id": 4,
           "links": [],
           "title": "Disk Temp – ${diskchip}",
@@ -1603,7 +1729,7 @@
                       "kind": "DataQuery",
                       "spec": {
                         "expr": "node_memory_MemTotal_bytes{instance=\"$node\", job=\"$job\"} - node_memory_MemAvailable_bytes{instance=\"$node\", job=\"$job\"}",
-                        "legendFormat": "Used"
+                        "legendFormat": "RAM Used"
                       },
                       "version": "v0"
                     },
@@ -1622,11 +1748,68 @@
                       "kind": "DataQuery",
                       "spec": {
                         "expr": "node_memory_MemAvailable_bytes{instance=\"$node\", job=\"$job\"}",
-                        "legendFormat": "Available"
+                        "legendFormat": "RAM Available"
                       },
                       "version": "v0"
                     },
                     "refId": "B"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "${ds_prometheus}"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "expr": "node_memory_SwapTotal_bytes{instance=\"$node\", job=\"$job\"}",
+                        "legendFormat": "Swap Total"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "C"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "${ds_prometheus}"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "expr": "node_memory_SwapTotal_bytes{instance=\"$node\", job=\"$job\"} - node_memory_SwapFree_bytes{instance=\"$node\", job=\"$job\"}",
+                        "legendFormat": "Swap Used"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "D"
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "hidden": false,
+                    "query": {
+                      "datasource": {
+                        "name": "${ds_prometheus}"
+                      },
+                      "group": "prometheus",
+                      "kind": "DataQuery",
+                      "spec": {
+                        "expr": "node_memory_MemTotal_bytes{instance=\"$node\", job=\"$job\"}",
+                        "legendFormat": "RAM Total"
+                      },
+                      "version": "v0"
+                    },
+                    "refId": "E"
                   }
                 }
               ],
@@ -1637,7 +1820,7 @@
           "description": "",
           "id": 6,
           "links": [],
-          "title": "RAM Used",
+          "title": "RAM & Swap Used",
           "vizConfig": {
             "group": "timeseries",
             "kind": "VizConfig",
@@ -1656,7 +1839,7 @@
                     "barAlignment": 0,
                     "barWidthFactor": 0.6,
                     "drawStyle": "line",
-                    "fillOpacity": 60,
+                    "fillOpacity": 0,
                     "gradientMode": "none",
                     "hideFrom": {
                       "legend": false,
@@ -1665,7 +1848,7 @@
                     },
                     "insertNulls": false,
                     "lineInterpolation": "linear",
-                    "lineWidth": 0,
+                    "lineWidth": 1,
                     "pointSize": 5,
                     "scaleDistribution": {
                       "type": "linear"
@@ -1675,7 +1858,7 @@
                     "spanNulls": false,
                     "stacking": {
                       "group": "A",
-                      "mode": "normal"
+                      "mode": "none"
                     },
                     "thresholdsStyle": {
                       "mode": "off"
@@ -1701,22 +1884,30 @@
                   {
                     "matcher": {
                       "id": "byName",
-                      "options": "Used"
+                      "options": "RAM Used"
                     },
                     "properties": [
                       {
                         "id": "color",
                         "value": {
-                          "fixedColor": "#33A2C7",
+                          "fixedColor": "#73BF69",
                           "mode": "fixed"
                         }
+                      },
+                      {
+                        "id": "custom.fillOpacity",
+                        "value": 20
+                      },
+                      {
+                        "id": "custom.lineWidth",
+                        "value": 1
                       }
                     ]
                   },
                   {
                     "matcher": {
                       "id": "byName",
-                      "options": "Available"
+                      "options": "RAM Available"
                     },
                     "properties": [
                       {
@@ -1725,154 +1916,46 @@
                           "fixedColor": "#EAB839",
                           "mode": "fixed"
                         }
-                      }
-                    ]
-                  }
-                ]
-              },
-              "options": {
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "hideZeros": false,
-                  "mode": "multi",
-                  "sort": "none"
-                }
-              }
-            },
-            "version": "13.2.0"
-          }
-        }
-      },
-      "panel-7": {
-        "kind": "Panel",
-        "spec": {
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "hidden": false,
-                    "query": {
-                      "datasource": {
-                        "name": "${ds_prometheus}"
                       },
-                      "group": "prometheus",
-                      "kind": "DataQuery",
-                      "spec": {
-                        "expr": "node_memory_SwapTotal_bytes{instance=\"$node\", job=\"$job\"} - node_memory_SwapFree_bytes{instance=\"$node\", job=\"$job\"}",
-                        "legendFormat": "Used"
-                      },
-                      "version": "v0"
-                    },
-                    "refId": "A"
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "hidden": false,
-                    "query": {
-                      "datasource": {
-                        "name": "${ds_prometheus}"
-                      },
-                      "group": "prometheus",
-                      "kind": "DataQuery",
-                      "spec": {
-                        "expr": "node_memory_SwapFree_bytes{instance=\"$node\", job=\"$job\"}",
-                        "legendFormat": "Free"
-                      },
-                      "version": "v0"
-                    },
-                    "refId": "B"
-                  }
-                }
-              ],
-              "queryOptions": {},
-              "transformations": []
-            }
-          },
-          "description": "",
-          "id": 7,
-          "links": [],
-          "title": "Swap Used",
-          "vizConfig": {
-            "group": "timeseries",
-            "kind": "VizConfig",
-            "spec": {
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 60,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 0,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "normal"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  },
-                  "min": 0,
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
                       {
-                        "color": "green",
+                        "id": "custom.fillOpacity",
                         "value": 0
                       },
                       {
-                        "color": "red",
-                        "value": 80
+                        "id": "custom.lineWidth",
+                        "value": 1
                       }
                     ]
                   },
-                  "unit": "bytes"
-                },
-                "overrides": [
                   {
                     "matcher": {
                       "id": "byName",
-                      "options": "Used"
+                      "options": "Swap Total"
                     },
                     "properties": [
                       {
                         "id": "color",
                         "value": {
-                          "fixedColor": "#33A2C7",
+                          "fixedColor": "#5794F2",
                           "mode": "fixed"
+                        }
+                      },
+                      {
+                        "id": "custom.fillOpacity",
+                        "value": 0
+                      },
+                      {
+                        "id": "custom.lineWidth",
+                        "value": 1
+                      },
+                      {
+                        "id": "custom.lineStyle",
+                        "value": {
+                          "dash": [
+                            10,
+                            10
+                          ],
+                          "fill": "dash"
                         }
                       }
                     ]
@@ -1880,14 +1963,55 @@
                   {
                     "matcher": {
                       "id": "byName",
-                      "options": "Free"
+                      "options": "Swap Used"
                     },
                     "properties": [
                       {
                         "id": "color",
                         "value": {
-                          "fixedColor": "#EAB839",
+                          "fixedColor": "#F2495C",
                           "mode": "fixed"
+                        }
+                      },
+                      {
+                        "id": "custom.fillOpacity",
+                        "value": 60
+                      },
+                      {
+                        "id": "custom.lineWidth",
+                        "value": 1
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "RAM Total"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "#73BF69",
+                          "mode": "fixed"
+                        }
+                      },
+                      {
+                        "id": "custom.fillOpacity",
+                        "value": 0
+                      },
+                      {
+                        "id": "custom.lineWidth",
+                        "value": 1
+                      },
+                      {
+                        "id": "custom.lineStyle",
+                        "value": {
+                          "dash": [
+                            10,
+                            10
+                          ],
+                          "fill": "dash"
                         }
                       }
                     ]
@@ -2080,7 +2204,7 @@
               },
               "width": 24,
               "x": 0,
-              "y": 50
+              "y": 26
             }
           },
           {
@@ -2093,7 +2217,7 @@
               "height": 10,
               "width": 24,
               "x": 0,
-              "y": 58
+              "y": 34
             }
           },
           {
@@ -2106,7 +2230,7 @@
               "height": 8,
               "width": 12,
               "x": 0,
-              "y": 68
+              "y": 44
             }
           },
           {
@@ -2119,20 +2243,7 @@
               "height": 8,
               "width": 12,
               "x": 12,
-              "y": 68
-            }
-          },
-          {
-            "kind": "GridLayoutItem",
-            "spec": {
-              "element": {
-                "kind": "ElementReference",
-                "name": "panel-7"
-              },
-              "height": 8,
-              "width": 12,
-              "x": 0,
-              "y": 76
+              "y": 44
             }
           }
         ]
@@ -2145,7 +2256,7 @@
       "linux"
     ],
     "timeSettings": {
-      "autoRefresh": "5s",
+      "autoRefresh": "30s",
       "autoRefreshIntervals": [
         "5s",
         "10s",
@@ -2164,7 +2275,7 @@
       "timezone": "browser",
       "to": "now"
     },
-    "title": "Node Exporter Mini3",
+    "title": "Node Exporter Mini8",
     "variables": [
       {
         "kind": "DatasourceVariable",
@@ -2191,8 +2302,8 @@
         "spec": {
           "allowCustomValue": true,
           "current": {
-            "text": "pve",
-            "value": "pve"
+            "text": "truenas",
+            "value": "truenas"
           },
           "hide": "dontHide",
           "includeAll": false,
@@ -2223,8 +2334,8 @@
         "spec": {
           "allowCustomValue": true,
           "current": {
-            "text": "pve",
-            "value": "pve"
+            "text": "truenas",
+            "value": "truenas"
           },
           "hide": "dontHide",
           "includeAll": false,
@@ -2255,8 +2366,8 @@
         "spec": {
           "allowCustomValue": true,
           "current": {
-            "text": "192.168.31.10:9100",
-            "value": "192.168.31.10:9100"
+            "text": "192.168.31.201:9100",
+            "value": "192.168.31.201:9100"
           },
           "hide": "dontHide",
           "includeAll": false,
