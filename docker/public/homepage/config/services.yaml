@@ -49,23 +49,8 @@
           password: {{HOMEPAGE_VAR_OWRT_PASSWORD}}
 #          interfaceName: br-lan # optional
 
-- Сервисы:
+- Core:
 
-    - Traefik:
-        icon: traefik.png
-        href: https://traefik-dashboard.homelab.ru
-        description: Обратный прокси
-
-    - Authelia:
-        icon: authelia.png
-        href: https://auth.homelab.ru
-        description: Сервер аутентификации и авторизации
-    
-    - Adguard home:
-        icon: adguard-home.png
-        href: https://adguardhome.homelab.ru
-        description: DNS-сервер
-    
     - Dockhand:
         icon: dockhand.png
         href: https://dockhand.homelab.ru
@@ -76,26 +61,11 @@
         href: https://forgejo.homelab.ru
         description: Хостинг кода
 
-    - Syncthing:
-        icon: syncthing.png
-        href: https://syncthing.homelab.ru
-        description: Синхронизация файлов
-
-    - Syncthing:
-        icon: syncthing.png
-        href: https://127.0.0.1:8384
-        description: Синхронизация файлов. Клиент ПК
-
-    - Qbittorrent:
-        icon: qbittorrent.png
-        href: https://qbittorrent.homelab.ru
-        description: Торрент-клиент
-
-    - Gotify:
-        icon: gotify.png
-        href: https://gotify.homelab.ru
-        description: Сервер пуш-уведомлений
-
+    - Adguard home:
+        icon: adguard-home.png
+        href: https://adguardhome.homelab.ru
+        description: DNS-сервер
+    
     - Uptime kuma:
         icon: uptime-kuma.png
         href: https://uptime-kuma.homelab.ru
@@ -110,16 +80,25 @@
         icon: victoriametrics.png
         href: https://victoria-metrics.homelab.ru
         description: База данных метрик
-    
-    - Stirling PDF:
-        icon: stirling-pdf.png
-        href: https://stirling-pdf.homelab.ru
-        description: PDF-редактор
 
-    - MeTube:
-        icon: metube.png
-        href: https://metube.homelab.ru
-        description: Загрузчик видео YouTube
+    - MiRouter AX3200:
+        icon: xiaomi.png
+        href: https://192.168.31.124/cgi-bin/luci/
+        description: Точка доступа
+
+- Edge:
+    
+    - Traefik:
+        icon: traefik.png
+        href: https://traefik-dashboard.homelab.ru
+        description: Обратный прокси
+
+    - Authelia:
+        icon: authelia.png
+        href: https://auth.homelab.ru
+        description: Сервер аутентификации и авторизации
+
+- Public:
 
     - Immich:
         icon: immich.png
@@ -131,17 +110,46 @@
         href: https://nextcloud.homelab.ru
         description: Домашнее облако
     
-    - MiRouter AX3200:
- #       icon: mi.png
-        href: https://192.168.31.124/cgi-bin/luci/
-        description: Точка доступа
+    - Syncthing:
+        icon: syncthing.png
+        href: https://syncthing.homelab.ru
+        description: Синхронизация файлов
+
+    - Syncthing:
+        icon: syncthing.png
+        href: https://127.0.0.1:8384
+        description: Синхронизация файлов. Клиент ПК
+
+    - Stirling PDF:
+        icon: stirling-pdf.png
+        href: https://stirling-pdf.homelab.ru
+        description: PDF-редактор
+
+    - Gotify:
+        icon: gotify.png
+        href: https://gotify.homelab.ru
+        description: Сервер пуш-уведомлений
+
+- Untrusted:
+
+    - Qbittorrent:
+        icon: qbittorrent.png
+        href: https://qbittorrent.homelab.ru
+        description: Торрент-клиент
+
+    - MeTube:
+        icon: metube.png
+        href: https://metube.homelab.ru
+        description: Загрузчик видео YouTube
+
+- Relay:
 
     - 3X-UI :
- #       icon: mi.png
+        icon: 3xui.png
         href: {{HOMEPAGE_VAR_3XUI_URL}}
         description: Entry node
     
     - 3X-UI local:
- #       icon: mi.png
+        icon: 3xui.png
         href: https://pannel.homelab.ru/admin
         description: Local node
