@@ -82,7 +82,7 @@
         description: База данных метрик
 
     - MiRouter AX3200:
-        icon: si-xiaomi.png
+        icon: si-xiaomi
         href: https://192.168.31.124/cgi-bin/luci/
         description: Точка доступа
 
