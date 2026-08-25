@@ -100,16 +100,6 @@
 
 - Public:
 
-    - Immich:
-        icon: immich.png
-        href: https://immich.homelab.ru
-        description: Фото и видео
-    
-    - Nextcloud:
-        icon: nextcloud.png
-        href: https://nextcloud.homelab.ru
-        description: Домашнее облако
-    
     - Syncthing:
         icon: syncthing.png
         href: https://syncthing.homelab.ru
