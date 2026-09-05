@@ -137,7 +137,7 @@
     - 3X-UI :
         icon: 3xui.png
         href: {{HOMEPAGE_VAR_3XUI_URL}}
-        description: Entry node
+        description: Exit node
     
     - 3X-UI local:
         icon: 3xui.png
