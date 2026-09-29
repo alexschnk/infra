@@ -1,0 +1,47 @@
+variant: fcos
+version: 1.5.0
+
+passwd:
+  users:
+    - name: alex
+      groups:
+        - wheel
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAA...your_public_key_here...
+
+storage:
+  files:
+    - path: /etc/hostname
+      mode: 0644
+      contents:
+        inline: coreos
+
+    - path: /etc/sysctl.d/99-custom.conf
+      mode: 0644
+      contents:
+        inline: |
+          vm.dirty_background_bytes=134217728
+          vm.dirty_bytes=536870912
+          vm.dirty_expire_centisecs=1500
+          vm.dirty_writeback_centisecs=300
+          vm.page-cluster=0
+          vm.swappiness=10
+          vm.vfs_cache_pressure=100
+
+    - path: /etc/systemd/zram-generator.conf
+      mode: 0644
+      contents:
+        inline: |
+          [zram0]
+          zram-size = 2048
+          compression-algorithm = zstd
+          swap-priority = 100
+          fs-type = swap
+
+    - path: /etc/ssh/sshd_config.d/99-custom.conf
+      mode: 0600
+      contents:
+        inline: |
+          PermitRootLogin no
+          PasswordAuthentication no
+          AllowUsers alex
